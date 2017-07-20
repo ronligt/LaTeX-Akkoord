@@ -31,29 +31,29 @@ my pic adjust/.default=0pt,
 }
 
 \newrobustcmd{\akkoord}[3][I] {
-  \begin{tikzpicture}[font=\sffamily\sansmath,scale=0.35, every node/.style={transform shape}, baseline=(current bounding box.north), my pic adjust=-2pt]
+  \begin{tikzpicture}[font=\sffamily\sansmath, scale=0.35, every node/.style={transform shape}, baseline=(current bounding box.north), my pic adjust=-2pt, yscale=-1] % Note: yscale -1 and node transform shape turns around the texts. this is solved by adding yscale -1 to node (see below)
   % Draw snares and frets (6 and 4)
   \draw[help lines] (0,0) grid (5,4);
-  % Write position of frets
-  \draw (-1, 3.5) node {\Huge #1};
+  % Write position
+  \draw (-1, 0.5) node {\Huge #1};
   \ifx#1\base {
 
   } \else {
-    \draw[thick] (0,4.1) -- (5,4.1);
+    \draw[thick] (0,-0.1) -- (5,-0.1);
   } \fi
   % Write name of chord
-  \draw (2.5,5.5) node {\Huge #3};
+  \node[yscale=-1] at (2.5,-1.5) {\Huge #3};
   % Draw fingers
   \foreach \x/\y/\z [count=\i] in {#2} {
     \ifx\x\mute {
-      \draw (\i-1, 4.5) node {\Large X};
+      \node[yscale=-1] at (\i-1, -0.5) {\Large X};
     } \else {
       \ifx\x\open {
-        \draw (\i-1, 4.5) node {\Large O};
+        \node[yscale=-1] at (\i-1, -0.5) {\Large O};
         \ifx\y\empty {
           \relax
         } \else {
-          \draw (\i-1, -0.5) node {\Large \y};
+          \node[yscale=-1] at (\i-1, 4.5) {\Large \y};
         } \fi
       } \else {
         % Find out if we can draw a bar...
@@ -64,19 +64,19 @@ my pic adjust/.default=0pt,
           \csnumgdef{@barLowSnare@\y}{\i}
           \csnumgdef{@barLowFret@\y}{\x}
         }
-        \filldraw [fill=white] (\i-1, 4.5-\x) circle [radius=0.4];
-        \draw (\i-1, 4.5-\x) node {\Large \y};
+        \filldraw [fill=white] (\i-1, \x-0.5) circle [radius=0.4];
+        \node[yscale=-1] at (\i-1, \x-0.5) {\Large \y};
         \ifx\z\empty {
           \relax
         } \else {
-          \draw (\i-1, -0.5) node {\Large \z};
+          \node[yscale=-1] at (\i-1, 4.5) {\Large \z};
         } \fi
       } \fi
     } \fi
   }
   \foreach \x/\y/\z [count=\i] in {#2} {
     \ifcsdef{@barHighSnare@\y} {
-      \draw[thick] (\csuse{@barLowSnare@\y}-1,4.9-\csuse{@barLowFret@\y}) to[out=20, in=160] (\csuse{@barHighSnare@\y}-1,4.9-\csuse{@barHighFret@\y});
+      \draw[thick] (\csuse{@barLowSnare@\y}-1,\csuse{@barLowFret@\y-1}) to[out=-20, in=-160] (\csuse{@barHighSnare@\y}-1,\csuse{@barHighFret@\y}-1); % Note: because yscale -1 the angles must be turned 180 (-20 and -160)
     }
     \global\csundef{@barLowSnare@\y}
     \global\csundef{@barLowFret@\y}
