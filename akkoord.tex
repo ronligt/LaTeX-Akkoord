@@ -4,6 +4,8 @@
 
 \usepackage[EULERGREEK]{sansmath}
 
+\usepackage{etoolbox}
+
 \usepackage[margin=.2in]{geometry}
 
 \usepackage{tabu}
@@ -28,7 +30,7 @@
 my pic adjust/.default=0pt,
 }
 
-\newcommand{\akkoord}[3][I] {
+\newrobustcmd{\akkoord}[3][I] {
   \begin{tikzpicture}[font=\sffamily\sansmath,scale=0.35, every node/.style={transform shape}, baseline=(current bounding box.north), my pic adjust=-2pt]
   % Draw snares and frets (6 and 4)
   \draw[help lines] (0,0) grid (5,4);
@@ -54,6 +56,14 @@ my pic adjust/.default=0pt,
           \draw (\i-1, -0.5) node {\Large \y};
         } \fi
       } \else {
+        % Find out if we can draw a bar...
+        \ifcsdef{@barLowSnare@\y} {
+          \csnumgdef{@barHighSnare@\y}{\i}
+          \csnumgdef{@barHighFret@\y}{\x}
+        } {
+          \csnumgdef{@barLowSnare@\y}{\i}
+          \csnumgdef{@barLowFret@\y}{\x}
+        }
         \filldraw [fill=white] (\i-1, 4.5-\x) circle [radius=0.4];
         \draw (\i-1, 4.5-\x) node {\Large \y};
         \ifx\z\empty {
@@ -63,6 +73,15 @@ my pic adjust/.default=0pt,
         } \fi
       } \fi
     } \fi
+  }
+  \foreach \x/\y/\z [count=\i] in {#2} {
+    \ifcsdef{@barHighSnare@\y} {
+      \draw[thick] (\csuse{@barLowSnare@\y}-1,4.9-\csuse{@barLowFret@\y}) to[out=20, in=160] (\csuse{@barHighSnare@\y}-1,4.9-\csuse{@barHighFret@\y});
+    }
+    \global\csundef{@barLowSnare@\y}
+    \global\csundef{@barLowFret@\y}
+    \global\csundef{@barHighSnare@\y}
+    \global\csundef{@barHighFret@\y}
   }
   \end{tikzpicture}
 }
