@@ -2,6 +2,8 @@
 
 \usepackage{tikz}
 
+\usetikzlibrary{decorations}
+
 \usepackage[EULERGREEK]{sansmath}
 
 \usepackage{etoolbox}
@@ -76,7 +78,7 @@ my pic adjust/.default=0pt,
   }
   \foreach \x/\y/\z [count=\i] in {#2} {
     \ifcsdef{@barHighSnare@\y} {
-      \draw[thick] (\csuse{@barLowSnare@\y}-1,\csuse{@barLowFret@\y-1}) to[out=-20, in=-160] (\csuse{@barHighSnare@\y}-1,\csuse{@barHighFret@\y}-1); % Note: because yscale -1 the angles must be turned 180 (-20 and -160)
+      \draw[thick] (\csuse{@barLowSnare@\y}-1,\csuse{@barLowFret@\y}-0.9) to[out=-20, in=-160] (\csuse{@barHighSnare@\y}-1,\csuse{@barHighFret@\y}-0.9); % Note: because yscale -1 the angles must be turned 180 (-20 and -160)
     }
     \global\csundef{@barLowSnare@\y}
     \global\csundef{@barLowFret@\y}
@@ -169,5 +171,4 @@ circle of fifths ("kwintencirkel")
   \draw (-120:4) node {D$\flat$};
 \end{tikzpicture}
 \end{center}
-
 \end{document}
