@@ -32,7 +32,7 @@ Copyright 2017 Ronald Ligteringen <r.ligteringen@gmail.com>
 ```
 draws a C<sub>7</sub> chord with only circles on the finger placements and mute symbols on top. Defaulting to `I` the position is written on the left and a nut is drawn
 
-![Image](example_c7.pdf)
+![Image](https://github.com/ronligt/LaTeX-Akkoord/blob/master/example_c7.pdf)
 
 ```latex
 \akkoord[II]{2/1/1,x,3/3/{$\sharp$7},3/4/3,2/2/5,x}{G\textsubscript{$\triangle$}}
