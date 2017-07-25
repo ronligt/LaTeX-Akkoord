@@ -1,5 +1,5 @@
 # Akkoord package
-Drawing guitar chords using TikZ.
+Drawing guitar chords using TikZ. Layout includes finger placement with free form fingername, Mute and Open above string, extra info below each string, position on left of chord, title on top of chord and automagically created bows.
 
 Copyright 2017 Ronald Ligteringen <r.ligteringen@gmail.com>
 
@@ -8,7 +8,6 @@ Copyright 2017 Ronald Ligteringen <r.ligteringen@gmail.com>
 ```latex
 \akkoord[<position>]{<fret>/<finger>/<info>,f/f/i,... 6x}{<chord-name>}
 ```
-
 * `<position>` is written on the left of the first fret
 * `<fret>` indicates the finger placement and can be either `x` for mute, `o` (the letter) for open or a number indicating the fret starting with 1
 * `<finger>` is written inside the finger placement indicating the used finger
