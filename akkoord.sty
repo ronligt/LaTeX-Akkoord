@@ -1,5 +1,67 @@
+%% the Akkoord package
+%%   Drawing guitar chords using TikZ
+%%
+%% Copyright 2017 Ronald Ligteringen <r.ligteringen@gmail.com>
+%
+% This work may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License, either version 1.3
+% of this license or (at your option) any later version.
+% The latest version of this license is in
+%   http://www.latex-project.org/lppl.txt
+% and version 1.3 or later is part of all distributions of LaTeX
+% version 2005/12/01 or later.
+%
+% This work has the LPPL maintenance status `maintained'.
+%
+% The Current Maintainer of this work is Ronald Ligteringen.
+%
+% This work consists of the file akkoord.sty
+%
+%% Inspired by:
+%% - guitarchordschemes-package by Clemens Niederberger
+%% - gchords-package by Kasper Peeters
+%
+% Usage:
+% \akkoord[<position>]{<fret>/<finger>/<info>,f/f/i,... 6x}{<chord-name>}
+% - <position> is written on the left of the first fret
+% - <fret> indicates the finger placement and can be either 'x' for mute,
+%   'o' (the letter) for open or a number indicating the fret starting with 1
+% - <finger> is written inside the finger placement indicating the used finger
+% - <info> is written below each string and can be used for extra info like
+%   actual note name or relative note in scale
+% - <chord-name> is written above the chord in the middle
+%
+% Note:
+% * if the same finger is used more than once on the same fret a bar is drawn
+%   automagically between the lowest and highest snare
+% * <position> is optional and can be omitted, it will default to 'I' (roman
+%   number)
+% * if <fret> is 'x' (mute), <finger> and <info> are ignored
+% * if <fret> is 'o' (open), <finger> contains the 'info' and <info> is ignored
+%   (see example below)
+% * if <finger> is '-' it will be omitted
+% * if <info> is '-' it will be omitted
+% * <chord-name> is required
+%
+% Examples:
+% \akkoord{x,3,2,3,1,x}{C\textsubscript{7}}
+%   draws a C7 chord with only circles on the finger placements and mute
+%   symbols on top. Defaulting to I the position is written on the left and a
+%   nut is drawn
+% \akkoord[II]{2/1/1,x,3/3/{$\sharp$7},3/4/3,2/2/5,x}{G\textsubscript{$\triangle$}}
+%   draws a G^ chord with fingers inside the circles and relative notes on the
+%   scale below the chord. Position II is written on the left (no nut)
+% \akkoord[II]{x,2/1/1,4/3/5,2/1/7,3/2/{$\flat$3},2/1/{(5)}}{C-\textsubscript{7}}
+%   draws a C-7 chord with a bow for finger 1 on the 2nd fret between 2nd snare
+%   from the left (A) and first snare from the right (high E)
+% \akkoord{x,o/-,o/{root},2/1/-,3/3/{root},2/2/-}{D}
+%   draw a D chord with one mute and two open symbols on top and two 'root'-s
+%   below the cord at the third snare from the left (D) and the second snare
+%   from the right (B)
+
 \NeedsTeXFormat{LaTeX2e}[1994/06/01]
-\ProvidesPackage{akkoord}[2017/07/23 Akkoord]
+
+\ProvidesPackage{akkoord}[2017/07/23 Drawing guitar chords using TikZ]
 
 \RequirePackage{tikz}
 \RequirePackage[EULERGREEK]{sansmath}
@@ -7,14 +69,17 @@
 
 \usetikzlibrary{decorations}
 
-\makeatletter
 
 \def\mute{x}
 \def\open{o}
 \def\empty{-}
 \def\base{I}
 
-% Fix baseline when drawing tikz in side tabu
+%%
+% Many thanks to A. Ellett:
+% Fix baseline when drawing tikz inside tabu
+% source: https://tex.stackexchange.com/questions/246698/table-with-tikz-image-vertical-alignment
+% This should probably not be inside this package file...
 \tikzset{my pic adjust/.style={%%
   baseline=(my center),
   execute at end picture={\path (current bounding box.north) -- ++ (0,4pt);
@@ -24,33 +89,56 @@
   },
 my pic adjust/.default=0pt,
 }
+%%
 
+\makeatletter
 \newrobustcmd{\akkoord}[3][I] {
   \begin{tikzpicture}[font=\sffamily\sansmath, scale=0.35, every node/.style={transform shape}, baseline=(current bounding box.north), my pic adjust=-2pt, yscale=-1] % Note: yscale -1 and node transform shape turns around the texts. this is solved by adding yscale -1 to node (see below)
-  % Draw snares and frets (6 and 4)
-  \draw[help lines] (0,0) grid (5,4);
-  % Write position
-  \draw (-1, 0.5) node {\Huge #1};
-  \ifx#1\base {
 
+  % Draw snares and frets (6 by 4)
+  \draw[help lines] (0,0) grid (5,4);
+
+  % Write position on the left
+  \draw (-1, 0.5) node {\Huge #1};
+
+  % Draw guitar nut if visible (position == 1)
+  \ifx#1\base {
+    \relax
   } \else {
     \draw[thick] (0,-0.1) -- (5,-0.1);
   } \fi
-  % Write name of chord
+
+  % Write chord-name above chord
   \node[yscale=-1] at (2.5,-1.5) {\Huge #3};
-  % Draw fingers
+
+  % Draw fingers on fret,
+  % mute or open on top
+  % and info on bottom
   \foreach \x/\y/\z [count=\i] in {#2} {
     \ifx\x\mute {
+      % Mute
       \node[yscale=-1] at (\i-1, -0.5) {\Large X};
     } \else {
       \ifx\x\open {
+        % Open
         \node[yscale=-1] at (\i-1, -0.5) {\Large O};
         \ifx\y\empty {
+          % No entry given
           \relax
         } \else {
+          % If finger is 'open', second value is 'info' and written below chord
           \node[yscale=-1] at (\i-1, 4.5) {\Large \y};
         } \fi
       } \else {
+        % Finger
+        \filldraw [fill=white] (\i-1, \x-0.5) circle [radius=0.4];
+        \node[yscale=-1] at (\i-1, \x-0.5) {\Large \y};
+        \ifx\z\empty {
+          \relax
+        } \else {
+          % Info below chord
+          \node[yscale=-1] at (\i-1, 4.5) {\Large \z};
+        } \fi
         % Find out if we can draw a bar...
         \ifcsdef{@barLowSnare@\y} {
           \csnumgdef{@barHighSnare@\y}{\i}
@@ -59,16 +147,10 @@ my pic adjust/.default=0pt,
           \csnumgdef{@barLowSnare@\y}{\i}
           \csnumgdef{@barLowFret@\y}{\x}
         }
-        \filldraw [fill=white] (\i-1, \x-0.5) circle [radius=0.4];
-        \node[yscale=-1] at (\i-1, \x-0.5) {\Large \y};
-        \ifx\z\empty {
-          \relax
-        } \else {
-          \node[yscale=-1] at (\i-1, 4.5) {\Large \z};
-        } \fi
       } \fi
     } \fi
   }
+  % Drawing bars if needed
   \foreach \x/\y/\z [count=\i] in {#2} {
     \ifcsdef{@barHighSnare@\y} {
       \fill (\csuse{@barLowSnare@\y}-1,\csuse{@barLowFret@\y}-0.915) to[out=-20, in=-160] (\csuse{@barHighSnare@\y}-1,\csuse{@barHighFret@\y}-0.915) to[out=-154, in=-26] (\csuse{@barLowSnare@\y}-1,\csuse{@barLowFret@\y}-0.915); % Note: because yscale -1 the angles must be turned 180 (-20 and -160). Note: only fill makes for nicer bow
@@ -80,7 +162,6 @@ my pic adjust/.default=0pt,
   }
   \end{tikzpicture}
 }
-
 \makeatother
 
 \endinput
