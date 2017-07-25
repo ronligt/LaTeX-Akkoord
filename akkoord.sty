@@ -44,7 +44,7 @@
 % * <chord-name> is required
 %
 % Examples:
-% \akkoord{x,3,2,3,1,x}{C\textsubscript{7}}
+% \akkoord{x,3/-/-,2/-/-,3/-/-,1/-/-,x}{C\textsubscript{7}}
 %   draws a C7 chord with only circles on the finger placements and mute
 %   symbols on top. Defaulting to I the position is written on the left and a
 %   nut is drawn
@@ -132,7 +132,11 @@ my pic adjust/.default=0pt,
       } \else {
         % Finger
         \filldraw [fill=white] (\i-1, \x-0.5) circle [radius=0.4];
-        \node[yscale=-1] at (\i-1, \x-0.5) {\Large \y};
+        \ifx\y\empty {
+          \relax
+        } \else {
+          \node[yscale=-1] at (\i-1, \x-0.5) {\Large \y};
+        } \fi
         \ifx\z\empty {
           \relax
         } \else {
@@ -140,13 +144,17 @@ my pic adjust/.default=0pt,
           \node[yscale=-1] at (\i-1, 4.5) {\Large \z};
         } \fi
         % Find out if we can draw a bar...
-        \ifcsdef{@barLowSnare@\y} {
-          \csnumgdef{@barHighSnare@\y}{\i}
-          \csnumgdef{@barHighFret@\y}{\x}
-        } {
-          \csnumgdef{@barLowSnare@\y}{\i}
-          \csnumgdef{@barLowFret@\y}{\x}
-        }
+        \ifx\y\empty {
+          \relax
+        } \else {
+          \ifcsdef{@barLowSnare@\y} {
+            \csnumgdef{@barHighSnare@\y}{\i}
+            \csnumgdef{@barHighFret@\y}{\x}
+          } {
+            \csnumgdef{@barLowSnare@\y}{\i}
+            \csnumgdef{@barLowFret@\y}{\x}
+          }
+        } \fi
       } \fi
     } \fi
   }
