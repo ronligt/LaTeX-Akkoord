@@ -1,12 +1,6 @@
 \documentclass{article}
 
-\usepackage{tikz}
-
-\usetikzlibrary{decorations}
-
-\usepackage[EULERGREEK]{sansmath}
-
-\usepackage{etoolbox}
+\usepackage{akkoord}
 
 \usepackage[margin=.2in]{geometry}
 
@@ -14,83 +8,9 @@
 
 \usepackage{xfrac}
 
-\makeatletter
-
-\def\mute{x}
-\def\open{o}
-\def\empty{-}
-\def\base{I}
-
-% Fix baseline when drawing tikz in side tabu
-\tikzset{my pic adjust/.style={%%
-  baseline=(my center),
-  execute at end picture={\path (current bounding box.north) -- ++ (0,4pt);
-                          \path (current bounding box.south) -- ++ (0,-4pt);
-                          \path (current bounding box.center) -- ++ (0,#1) coordinate (my center);
-                          }%
-  },
-my pic adjust/.default=0pt,
-}
-
-\newrobustcmd{\akkoord}[3][I] {
-  \begin{tikzpicture}[font=\sffamily\sansmath, scale=0.35, every node/.style={transform shape}, baseline=(current bounding box.north), my pic adjust=-2pt, yscale=-1] % Note: yscale -1 and node transform shape turns around the texts. this is solved by adding yscale -1 to node (see below)
-  % Draw snares and frets (6 and 4)
-  \draw[help lines] (0,0) grid (5,4);
-  % Write position
-  \draw (-1, 0.5) node {\Huge #1};
-  \ifx#1\base {
-
-  } \else {
-    \draw[thick] (0,-0.1) -- (5,-0.1);
-  } \fi
-  % Write name of chord
-  \node[yscale=-1] at (2.5,-1.5) {\Huge #3};
-  % Draw fingers
-  \foreach \x/\y/\z [count=\i] in {#2} {
-    \ifx\x\mute {
-      \node[yscale=-1] at (\i-1, -0.5) {\Large X};
-    } \else {
-      \ifx\x\open {
-        \node[yscale=-1] at (\i-1, -0.5) {\Large O};
-        \ifx\y\empty {
-          \relax
-        } \else {
-          \node[yscale=-1] at (\i-1, 4.5) {\Large \y};
-        } \fi
-      } \else {
-        % Find out if we can draw a bar...
-        \ifcsdef{@barLowSnare@\y} {
-          \csnumgdef{@barHighSnare@\y}{\i}
-          \csnumgdef{@barHighFret@\y}{\x}
-        } {
-          \csnumgdef{@barLowSnare@\y}{\i}
-          \csnumgdef{@barLowFret@\y}{\x}
-        }
-        \filldraw [fill=white] (\i-1, \x-0.5) circle [radius=0.4];
-        \node[yscale=-1] at (\i-1, \x-0.5) {\Large \y};
-        \ifx\z\empty {
-          \relax
-        } \else {
-          \node[yscale=-1] at (\i-1, 4.5) {\Large \z};
-        } \fi
-      } \fi
-    } \fi
-  }
-  \foreach \x/\y/\z [count=\i] in {#2} {
-    \ifcsdef{@barHighSnare@\y} {
-      \draw[thick] (\csuse{@barLowSnare@\y}-1,\csuse{@barLowFret@\y}-0.9) to[out=-20, in=-160] (\csuse{@barHighSnare@\y}-1,\csuse{@barHighFret@\y}-0.9); % Note: because yscale -1 the angles must be turned 180 (-20 and -160)
-    }
-    \global\csundef{@barLowSnare@\y}
-    \global\csundef{@barLowFret@\y}
-    \global\csundef{@barHighSnare@\y}
-    \global\csundef{@barHighFret@\y}
-  }
-  \end{tikzpicture}
-}
-
-\makeatother
-
 \begin{document}
+
+hallo daar
 
 \begin{tabu}{ X[1,c,m] | X[5,l,m] | X[8,l,m] }
   \textbf{chord} & \textbf{root 6} & \textbf{root 5} \\ \hline
@@ -143,32 +63,32 @@ my pic adjust/.default=0pt,
 circle of fifths ("kwintencirkel")
 
 \begin{tikzpicture}
-  \draw (0,0) circle [radius=4];
-  \filldraw[fill=white] (90:4) circle [radius=.55];
-  \filldraw[fill=white] (60:4) circle [radius=.55];
-  \filldraw[fill=white] (30:4) circle [radius=.55];
-  \filldraw[fill=white] (0:4) circle [radius=.55];
-  \filldraw[fill=white] (-30:4) circle [radius=.55];
-  \filldraw[fill=white] (-60:4) circle [radius=.55];
-  \filldraw[fill=white] (-90:4) circle [radius=.55];
-  \filldraw[fill=white] (-120:4) circle [radius=.55];
-  \filldraw[fill=white] (-150:4) circle [radius=.55];
-  \filldraw[fill=white] (180:4) circle [radius=.55];
-  \filldraw[fill=white] (150:4) circle [radius=.55];
-  \filldraw[fill=white] (120:4) circle [radius=.55];
+  \draw (0,0) circle [radius=2.5];
+  % \filldraw[fill=white] (90:4) circle [radius=.55];
+  % \filldraw[fill=white] (60:4) circle [radius=.55];
+  % \filldraw[fill=white] (30:4) circle [radius=.55];
+  % \filldraw[fill=white] (0:4) circle [radius=.55];
+  % \filldraw[fill=white] (-30:4) circle [radius=.55];
+  % \filldraw[fill=white] (-60:4) circle [radius=.55];
+  % \filldraw[fill=white] (-90:4) circle [radius=.55];
+  % \filldraw[fill=white] (-120:4) circle [radius=.55];
+  % \filldraw[fill=white] (-150:4) circle [radius=.55];
+  % \filldraw[fill=white] (180:4) circle [radius=.55];
+  % \filldraw[fill=white] (150:4) circle [radius=.55];
+  % \filldraw[fill=white] (120:4) circle [radius=.55];
 
-  \draw (90:4) node {C};
-  \draw (60:4) node {G};
-  \draw (30:4) node {D};
-  \draw (0:4) node {A};
-  \draw (-30:4) node {E};
-  \draw (-60:4) node {B};
-  \draw (-90:4) node {G$\flat$/F$\sharp$};
-  \draw (120:4) node {F};
-  \draw (150:4) node {B$\flat$};
-  \draw (180:4) node {E$\flat$};
-  \draw (-150:4) node {A$\flat$};
-  \draw (-120:4) node {D$\flat$};
+  \draw (90:3) node {C};
+  \draw (60:3) node {G};
+  \draw (30:3) node {D};
+  \draw (0:3) node {A};
+  \draw (-30:3) node {E};
+  \draw (-60:3) node {B};
+  \draw (-90:3) node {G$\flat$/F$\sharp$};
+  \draw (120:3) node {F};
+  \draw (150:3) node {B$\flat$};
+  \draw (180:3) node {E$\flat$};
+  \draw (-150:3) node {A$\flat$};
+  \draw (-120:3) node {D$\flat$};
 \end{tikzpicture}
 \end{center}
 \end{document}

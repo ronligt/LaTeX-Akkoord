@@ -1,0 +1,86 @@
+\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+\ProvidesPackage{akkoord}[2017/07/23 Akkoord]
+
+\RequirePackage{tikz}
+\RequirePackage[EULERGREEK]{sansmath}
+\RequirePackage{etoolbox}
+
+\usetikzlibrary{decorations}
+
+\makeatletter
+
+\def\mute{x}
+\def\open{o}
+\def\empty{-}
+\def\base{I}
+
+% Fix baseline when drawing tikz in side tabu
+\tikzset{my pic adjust/.style={%%
+  baseline=(my center),
+  execute at end picture={\path (current bounding box.north) -- ++ (0,4pt);
+                          \path (current bounding box.south) -- ++ (0,-4pt);
+                          \path (current bounding box.center) -- ++ (0,#1) coordinate (my center);
+                          }%
+  },
+my pic adjust/.default=0pt,
+}
+
+\newrobustcmd{\akkoord}[3][I] {
+  \begin{tikzpicture}[font=\sffamily\sansmath, scale=0.35, every node/.style={transform shape}, baseline=(current bounding box.north), my pic adjust=-2pt, yscale=-1] % Note: yscale -1 and node transform shape turns around the texts. this is solved by adding yscale -1 to node (see below)
+  % Draw snares and frets (6 and 4)
+  \draw[help lines] (0,0) grid (5,4);
+  % Write position
+  \draw (-1, 0.5) node {\Huge #1};
+  \ifx#1\base {
+
+  } \else {
+    \draw[thick] (0,-0.1) -- (5,-0.1);
+  } \fi
+  % Write name of chord
+  \node[yscale=-1] at (2.5,-1.5) {\Huge #3};
+  % Draw fingers
+  \foreach \x/\y/\z [count=\i] in {#2} {
+    \ifx\x\mute {
+      \node[yscale=-1] at (\i-1, -0.5) {\Large X};
+    } \else {
+      \ifx\x\open {
+        \node[yscale=-1] at (\i-1, -0.5) {\Large O};
+        \ifx\y\empty {
+          \relax
+        } \else {
+          \node[yscale=-1] at (\i-1, 4.5) {\Large \y};
+        } \fi
+      } \else {
+        % Find out if we can draw a bar...
+        \ifcsdef{@barLowSnare@\y} {
+          \csnumgdef{@barHighSnare@\y}{\i}
+          \csnumgdef{@barHighFret@\y}{\x}
+        } {
+          \csnumgdef{@barLowSnare@\y}{\i}
+          \csnumgdef{@barLowFret@\y}{\x}
+        }
+        \filldraw [fill=white] (\i-1, \x-0.5) circle [radius=0.4];
+        \node[yscale=-1] at (\i-1, \x-0.5) {\Large \y};
+        \ifx\z\empty {
+          \relax
+        } \else {
+          \node[yscale=-1] at (\i-1, 4.5) {\Large \z};
+        } \fi
+      } \fi
+    } \fi
+  }
+  \foreach \x/\y/\z [count=\i] in {#2} {
+    \ifcsdef{@barHighSnare@\y} {
+      \fill (\csuse{@barLowSnare@\y}-1,\csuse{@barLowFret@\y}-0.915) to[out=-20, in=-160] (\csuse{@barHighSnare@\y}-1,\csuse{@barHighFret@\y}-0.915) to[out=-154, in=-26] (\csuse{@barLowSnare@\y}-1,\csuse{@barLowFret@\y}-0.915); % Note: because yscale -1 the angles must be turned 180 (-20 and -160). Note: only fill makes for nicer bow
+    }
+    \global\csundef{@barLowSnare@\y}
+    \global\csundef{@barLowFret@\y}
+    \global\csundef{@barHighSnare@\y}
+    \global\csundef{@barHighFret@\y}
+  }
+  \end{tikzpicture}
+}
+
+\makeatother
+
+\endinput
