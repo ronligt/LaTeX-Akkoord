@@ -1,3 +1,8 @@
+# Akkoord package
+Drawing guitar chords using TikZ.
+
+Copyright 2017 Ronald Ligteringen <r.ligteringen@gmail.com>
+
 # Usage
 
 ```latex
