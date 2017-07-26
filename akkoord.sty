@@ -20,44 +20,6 @@
 %% Inspired by:
 %% - guitarchordschemes-package by Clemens Niederberger
 %% - gchords-package by Kasper Peeters
-%
-% Usage:
-% \akkoord[<position>]{<fret>/<finger>/<info>,f/f/i,... 6x}{<chord-name>}
-% - <position> is written on the left of the first fret
-% - <fret> indicates the finger placement and can be either 'x' for mute,
-%   'o' (the letter) for open or a number indicating the fret starting with 1
-% - <finger> is written inside the finger placement indicating the used finger
-% - <info> is written below each string and can be used for extra info like
-%   actual note name or relative note in scale
-% - <chord-name> is written above the chord in the middle
-%
-% Note:
-% * if the same finger is used more than once on the same fret a bar is drawn
-%   automagically between the lowest and highest snare
-% * <position> is optional and can be omitted, it will default to 'I' (roman
-%   number)
-% * if <fret> is 'x' (mute), <finger> and <info> are ignored
-% * if <fret> is 'o' (open), <finger> contains the 'info' and <info> is ignored
-%   (see example below)
-% * if <finger> is '-' it will be omitted
-% * if <info> is '-' it will be omitted
-% * <chord-name> is required
-%
-% Examples:
-% \akkoord{x,3/-/-,2/-/-,3/-/-,1/-/-,x}{C\textsubscript{7}}
-%   draws a C7 chord with only circles on the finger placements and mute
-%   symbols on top. Defaulting to I the position is written on the left and a
-%   nut is drawn
-% \akkoord[II]{2/1/1,x,3/3/{$\sharp$7},3/4/3,2/2/5,x}{G\textsubscript{$\triangle$}}
-%   draws a G^ chord with fingers inside the circles and relative notes on the
-%   scale below the chord. Position II is written on the left (no nut)
-% \akkoord[II]{x,2/1/1,4/3/5,2/1/7,3/2/{$\flat$3},2/1/{(5)}}{C-\textsubscript{7}}
-%   draws a C-7 chord with a bow for finger 1 on the 2nd fret between 2nd snare
-%   from the left (A) and first snare from the right (high E)
-% \akkoord{x,o/-,o/{root},2/1/-,3/3/{root},2/2/-}{D}
-%   draw a D chord with one mute and two open symbols on top and two 'root'-s
-%   below the cord at the third snare from the left (D) and the second snare
-%   from the right (B)
 
 \NeedsTeXFormat{LaTeX2e}[1994/06/01]
 
@@ -70,13 +32,9 @@
 \usetikzlibrary{decorations}
 
 
-\def\mute{x}
-\def\open{o}
 \csgdef{@fretmute}{x}
 \csgdef{@fretopen}{o}
-\def\empty{-}
 \csgdef{@skip}{-}
-\def\base{I}
 \csgdef{@posbase}{I}
 
 %%
@@ -122,8 +80,10 @@ my pic adjust/.default=0pt,
   % mute or open on top
   % and info on bottom
   \foreach \x/\y/\z [count=\i] in {#2} {
+    \node[yscale=-1] at (\i-1, -1.5) {\x,\y,\z};
     \global\csedef{@fret}{\x}
     \global\csedef{@finger}{\y}
+    \node[yscale=-1] at (\i-1, -1.0) {\csuse{@fret},\csuse{@finger}};
     \ifcsequal{@fret}{@skip} {
       \global\csedef{@info}{\y}
     } {
@@ -174,5 +134,33 @@ my pic adjust/.default=0pt,
   \end{tikzpicture}
 }
 \makeatother
+
+\newrobustcmd{\blie}[1]{
+\csdef{@totaal}{#1}
+\StrCut{\csuse{@totaal}}{/}\left\right
+\ifx \left \empty
+  \csundef{@first}
+\else
+  \csdef{@first}{\left}
+\fi
+\csdef{@subtotaal}{\right}
+\StrCut{\csuse{@subtotaal}}{/}\sleft\sright
+\ifx \sleft \empty
+  \csundef{@second}
+\else
+  \csdef{@second}{\sleft}
+\fi
+\ifx \sright \empty
+  \csundef{@third}
+\else
+  \csdef{@third}{\sright}
+\fi
+\csuse{@totaal} - \ifcsdef{@first}{\csuse{@first}}{undefined} : \ifcsdef{@second}{\csuse{@second}}{undefined} : \ifcsdef{@third}{\csuse{@third}}{undefined}
+\csundef{@first}
+\csundef{@second}
+\csundef{@third}
+\csundef{@subtotaal}
+\csundef{@totaal}
+}
 
 \endinput
