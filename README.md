@@ -6,24 +6,18 @@ Copyright 2017 Ronald Ligteringen <[r.ligteringen@gmail.com](mailto:r.ligteringe
 # Usage
 
 ```latex
-\akkoord[<position>]{<fret>/<finger>/<info>,f/f/i,... 6x}{<chord-name>}
+\akkoord[<position>]{<snare1>,<snare2>,...,<snare6>}{<chord-name>}
 ```
-* `<position>` is written on the left of the first fret
-* `<fret>` indicates the finger placement and can be either `x` for mute, `o` (the letter) for open or a number indicating the fret starting with 1
-* `<finger>` is written inside the finger placement indicating the used finger
-* `<info>` is written below each string and can be used for extra info like actual note name or relative note in scale
-* `<chord-name>` is written above the chord in the middle
-
-# Note
-
+* `<snaren>` can have the following forms:
+    * `-` leaves the snare empty
+    * `-/<info>` only writes `info` below the snare. If `info` is set to `-` no info is written
+    * `m/<info>` mutes the snare with an `X` above the snare (`info` below)
+    * `o/<info>` indicates open snare with an `O` above the snare (`info` below)
+    * `<fret>/<finger>/<info>` places the `finger` on the `fret` (`info` below). If `finger` is set to `-` no finger is written inside fret
+* `<position>` is written on the left of the first fret. If omitted position defaults to `I`. If set to `-` no position is written
+* `<chord-name>` is written above the chord in the middle. If set to `-` no chord name is written
 * if the same finger is used more than once on the same fret a bar is drawn automagically between the lowest and highest snare
-* `<position>` is optional and can be omitted, it will default to `I` (roman number)
-* if `<fret>` is `x` (mute), `<finger>` and `<info>` are ignored
-* if `<fret>` is `o` (open), `<finger>` contains the extra info and `<info>` is ignored
- (see D-chord example below)
-* if `<finger>` is `-` it will be omitted
-* if `<info>` is `-` it will be omitted
-* `<chord-name>` is required
+
 
 # Examples
 
