@@ -1,4 +1,4 @@
-# Akkoord package
+# Akkoord package for LaTeX
 Drawing guitar chords using TikZ. Layout includes finger placement with free form fingername, Mute and Open above string, extra info below each string, position on left of chord, title on top of chord and automagically created bows.
 
 Copyright 2017 Ronald Ligteringen <[r.ligteringen@gmail.com](mailto:r.ligteringen@gmail.com)>
