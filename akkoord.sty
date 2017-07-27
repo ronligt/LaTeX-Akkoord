@@ -33,8 +33,8 @@
 \usetikzlibrary{decorations}
 
 
-\csgdef{@fretmute}{x}
-\csgdef{@fretopen}{o}
+\csgdef{@mute}{x}
+\csgdef{@open}{o}
 \csgdef{@skip}{-}
 \csgdef{@posbase}{I}
 
@@ -80,58 +80,97 @@ my pic adjust/.default=0pt,
   % Draw fingers on fret,
   % mute or open on top
   % and info on bottom
-  \foreach \x/\y/\z [count=\i] in {#2} {
-    \node[yscale=-1] at (\i-1, -1.5) {\x,\y,\z};
-    \global\csedef{@fret}{\x}
-    \global\csedef{@finger}{\y}
-    \node[yscale=-1] at (\i-1, -1.0) {\csuse{@fret},\csuse{@finger}};
-    \ifcsequal{@fret}{@skip} {
-      \global\csedef{@info}{\y}
-    } {
-      \ifcsequal{@fret}{@fretmute}{
-        % Mute
+  \foreach \x [count=\i] in {#2} {
+    \csedef{@varargs}{\x}
+    \StrCut{\csuse{@varargs}}{/}\left\right
+    \ifx \left \empty
+      \csundef{@fret}
+    \else
+      \global\csedef{@fret}{\left}
+    \fi
+    \csedef{@subvarargs}{\right}
+    \StrCut{\csuse{@subvarargs}}{/}\sleft\sright
+    \ifx \sleft \empty
+      \csundef{@finger}
+    \else
+      \global\csedef{@finger}{\sleft}
+    \fi
+    \ifx \sright \empty
+      \csundef{@info}
+    \else
+      \global\csedef{@info}{\sright}
+    \fi
+    \ifcsdef{@fret}
+      {
+      \node[yscale=-1] at (\i-1, -1) {\csuse{@fret},\csuse{@finger},\csuse{@info}};
+      \ifcsequal{@fret}{@mute}
+        {
         \node[yscale=-1] at (\i-1, -0.5) {\Large X};
-        \global\csedef{@info}{\y}
-      } {
-        \ifcsequal{@fret}{@fretopen} {
-          % Open
+        \ifcsdef{@finger}
+          {
+          \csedef{@info}{\csuse{@finger}}
+          } {}
+        }
+        {
+        \ifcsequal{@fret}{@open}
+          {
           \node[yscale=-1] at (\i-1, -0.5) {\Large O};
-          \global\csedef{@info}{\y}
-        } {
-          % Finger
-          \filldraw [fill=white] (\i-1, \csuse{@fret}-0.5) circle [radius=0.4];
-          \ifcsequal{@finger}{@skip} {} {
-            \node[yscale=-1] at (\i-1, \csuse{@fret}-0.5) {\Large \csuse{@finger}};
-            % Find out if we can draw a bar...
-            \ifcsdef{@barLowSnare@\y} {
-              \csnumgdef{@barHighSnare@\y}{\i}
-              \csnumgdef{@barHighFret@\y}{\csuse{@fret}}
-            } {
-              \csnumgdef{@barLowSnare@\y}{\i}
-              \csnumgdef{@barLowFret@\y}{\csuse{@fret}}
+          \ifcsdef{@finger}
+            {
+            \csedef{@info}{\csuse{@finger}}
+            } {}
+          }
+          {
+          \ifcsequal{@fret}{@skip}
+            {
+            \ifcsdef{@finger}
+              {
+              \csedef{@info}{\csuse{@finger}}
+              }
+            }
+            {
+            \filldraw [fill=white] (\i-1, \csuse{@fret}-0.5) circle [radius=0.4];
+            \ifcsdef{@finger}
+              {
+              \ifcsequal{@finger}{@skip}{}
+                {
+                \node[yscale=-1] at (\i-1, \csuse{@fret}-0.5) {\Large \csuse{@finger}};
+                % Find out if we can draw a bar...
+                \ifcsdef{@barLowSnare@\csuse{@finger}}
+                  {
+                  \csnumgdef{@barHighSnare@\csuse{@finger}}{\i}
+                  \csnumgdef{@barHighFret@\csuse{@finger}}{\csuse{@fret}}
+                  }
+                  {
+                  \csnumgdef{@barLowSnare@\csuse{@finger}}{\i}
+                  \csnumgdef{@barLowFret@\csuse{@finger}}{\csuse{@fret}}
+                  }
+                }
+              }{}
             }
           }
-          \global\csedef{@info}{\z}
         }
-      }
-    }
-    \ifcsequal{@info}{@skip} {
-      \relax
-    } {
-      % Info below chord
-      \node[yscale=-1] at (\i-1, 4.5) {\Large \csuse{@info}};
-    }
+        \ifcsdef{@info}
+          {
+          \node[yscale=-1] at (\i-1, 4.5) {\Large \csuse{@info}};
+          } {}
+      } {}
+    \csundef{@fret}
+    \csundef{@finger}
+    \csundef{@info}
+    \csundef{@subvarargs}
+    \csundef{@varargs}
   }
-  % Drawing bars if needed
-  \foreach \x/\y/\z [count=\i] in {#2} {
-    \ifcsdef{@barHighSnare@\y} {
-      \fill (\csuse{@barLowSnare@\y}-1,\csuse{@barLowFret@\y}-0.915) to[out=-20, in=-160] (\csuse{@barHighSnare@\y}-1,\csuse{@barHighFret@\y}-0.915) to[out=-154, in=-26] (\csuse{@barLowSnare@\y}-1,\csuse{@barLowFret@\y}-0.915); % Note: because yscale -1 the angles must be turned 180 (-20 and -160). Note: only fill makes for nicer bow
-    }
-    \global\csundef{@barLowSnare@\y}
-    \global\csundef{@barLowFret@\y}
-    \global\csundef{@barHighSnare@\y}
-    \global\csundef{@barHighFret@\y}
-  }
+  % % Drawing bars if needed
+  % \foreach \x/\y/\z [count=\i] in {#2} {
+  %   \ifcsdef{@barHighSnare@\y} {
+  %     \fill (\csuse{@barLowSnare@\y}-1,\csuse{@barLowFret@\y}-0.915) to[out=-20, in=-160] (\csuse{@barHighSnare@\y}-1,\csuse{@barHighFret@\y}-0.915) to[out=-154, in=-26] (\csuse{@barLowSnare@\y}-1,\csuse{@barLowFret@\y}-0.915); % Note: because yscale -1 the angles must be turned 180 (-20 and -160). Note: only fill makes for nicer bow
+  %   }
+  %   \global\csundef{@barLowSnare@\y}
+  %   \global\csundef{@barLowFret@\y}
+  %   \global\csundef{@barHighSnare@\y}
+  %   \global\csundef{@barHighFret@\y}
+  % }
   \end{tikzpicture}
 }
 \makeatother
