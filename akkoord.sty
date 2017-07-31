@@ -200,32 +200,4 @@ my pic adjust/.default=0pt,
 }
 \makeatother
 
-\newrobustcmd{\blie}[1]{
-\csdef{@totaal}{#1}
-\StrCut{\csuse{@totaal}}{/}\left\right
-\ifx \left \empty
-  \csundef{@first}
-\else
-  \csdef{@first}{\left}
-\fi
-\csdef{@subtotaal}{\right}
-\StrCut{\csuse{@subtotaal}}{/}\sleft\sright
-\ifx \sleft \empty
-  \csundef{@second}
-\else
-  \csdef{@second}{\sleft}
-\fi
-\ifx \sright \empty
-  \csundef{@third}
-\else
-  \csdef{@third}{\sright}
-\fi
-\csuse{@totaal} - \ifcsdef{@first}{\csuse{@first}}{undefined} : \ifcsdef{@second}{\csuse{@second}}{undefined} : \ifcsdef{@third}{\csuse{@third}}{undefined}
-\csundef{@first}
-\csundef{@second}
-\csundef{@third}
-\csundef{@subtotaal}
-\csundef{@totaal}
-}
-
 \endinput
