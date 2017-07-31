@@ -32,11 +32,13 @@
 
 \usetikzlibrary{decorations}
 
-
 \csgdef{@mute}{x}
 \csgdef{@open}{o}
 \csgdef{@skip}{-}
 \csgdef{@posbase}{I}
+
+\xdef\fingerList{\empty}
+\newcommand{\addFingerList}[1]{\ifx\fingerList\empty{\xdef\fingerList{#1}}\else{\xdef\fingerList{\fingerList,#1}}\fi}
 
 %%
 % Many thanks to A. Ellett:
@@ -81,6 +83,9 @@ my pic adjust/.default=0pt,
   % mute or open on top
   % and info on bottom
   \foreach \x [count=\i] in {#2} {
+    %%
+    % variable amount of arguments separated by '/'
+    % consecutively stored in '@fret', '@finger' and '@info'
     \csedef{@varargs}{\x}
     \StrCut{\csuse{@varargs}}{/}\left\right
     \ifx \left \empty
@@ -100,78 +105,98 @@ my pic adjust/.default=0pt,
     \else
       \global\csedef{@info}{\sright}
     \fi
+    \csundef{@subvarargs}
+    \csundef{@varargs}
+    % end variable amount of arguments
+    %%
+    % Fret is defined
     \ifcsdef{@fret}
       {
-      \node[yscale=-1] at (\i-1, -1) {\csuse{@fret},\csuse{@finger},\csuse{@info}};
+      % Fret is mute
       \ifcsequal{@fret}{@mute}
         {
         \node[yscale=-1] at (\i-1, -0.5) {\Large X};
+        % if fret is mute, second argument is info (not finger)
         \ifcsdef{@finger}
           {
           \csedef{@info}{\csuse{@finger}}
+          \csundef{@finger}
           } {}
         }
         {
+        % Fret is open
         \ifcsequal{@fret}{@open}
           {
           \node[yscale=-1] at (\i-1, -0.5) {\Large O};
+          % if fret is open, second argument is info (not finger)
           \ifcsdef{@finger}
             {
             \csedef{@info}{\csuse{@finger}}
+            \csundef{@finger}
             } {}
           }
           {
+          % Fret is skipped
           \ifcsequal{@fret}{@skip}
             {
+            % if fret is skipped, second argument is info (not finger)
             \ifcsdef{@finger}
               {
               \csedef{@info}{\csuse{@finger}}
+              \csundef{@finger}
               }
             }
             {
+            % Otherwise fret is fret-number
             \filldraw [fill=white] (\i-1, \csuse{@fret}-0.5) circle [radius=0.4];
+            % write finger in fret
             \ifcsdef{@finger}
               {
               \ifcsequal{@finger}{@skip}{}
                 {
                 \node[yscale=-1] at (\i-1, \csuse{@fret}-0.5) {\Large \csuse{@finger}};
+                % Remember used finger for drawing bar
+                \addFingerList{\csuse{@finger}}
                 % Find out if we can draw a bar...
                 \ifcsdef{@barLowSnare@\csuse{@finger}}
                   {
-                  \csnumgdef{@barHighSnare@\csuse{@finger}}{\i}
-                  \csnumgdef{@barHighFret@\csuse{@finger}}{\csuse{@fret}}
+                    \csnumgdef{@barHighSnare@\csuse{@finger}}{\i}
+                    \csnumgdef{@barHighFret@\csuse{@finger}}{\csuse{@fret}}
                   }
                   {
-                  \csnumgdef{@barLowSnare@\csuse{@finger}}{\i}
-                  \csnumgdef{@barLowFret@\csuse{@finger}}{\csuse{@fret}}
+                    \csnumgdef{@barLowSnare@\csuse{@finger}}{\i}
+                    \csnumgdef{@barLowFret@\csuse{@finger}}{\csuse{@fret}}
                   }
                 }
               }{}
             }
           }
         }
+        % Write info
         \ifcsdef{@info}
           {
           \node[yscale=-1] at (\i-1, 4.5) {\Large \csuse{@info}};
           } {}
       } {}
+    % Cleanup
     \csundef{@fret}
     \csundef{@finger}
     \csundef{@info}
-    \csundef{@subvarargs}
-    \csundef{@varargs}
   }
-  % % Drawing bars if needed
-  % \foreach \x/\y/\z [count=\i] in {#2} {
-  %   \ifcsdef{@barHighSnare@\y} {
-  %     \fill (\csuse{@barLowSnare@\y}-1,\csuse{@barLowFret@\y}-0.915) to[out=-20, in=-160] (\csuse{@barHighSnare@\y}-1,\csuse{@barHighFret@\y}-0.915) to[out=-154, in=-26] (\csuse{@barLowSnare@\y}-1,\csuse{@barLowFret@\y}-0.915); % Note: because yscale -1 the angles must be turned 180 (-20 and -160). Note: only fill makes for nicer bow
-  %   }
-  %   \global\csundef{@barLowSnare@\y}
-  %   \global\csundef{@barLowFret@\y}
-  %   \global\csundef{@barHighSnare@\y}
-  %   \global\csundef{@barHighFret@\y}
-  % }
+  % Drawing bars if needed
+  \foreach \x in \fingerList {
+    \ifcsdef{@barHighSnare@\x}{
+      \fill (\csuse{@barLowSnare@\x}-1,\csuse{@barLowFret@\x}-0.915) to[out=-20, in=-160] (\csuse{@barHighSnare@\x}-1,\csuse{@barHighFret@\x}-0.915) to[out=-154, in=-26] (\csuse{@barLowSnare@\x}-1,\csuse{@barLowFret@\x}-0.915); % Note: because yscale -1 the angles must be turned 180 (-20 and -160). Note: only fill makes for nicer bow
+    }{}
+    % Cleanup
+    \global\csundef{@barLowSnare@\x}
+    \global\csundef{@barLowFret@\x}
+    \global\csundef{@barHighSnare@\x}
+    \global\csundef{@barHighFret@\x}
+  }
   \end{tikzpicture}
+  % Reset list of used fingers
+  \xdef\fingerList{\empty}
 }
 \makeatother
 
