@@ -28,7 +28,7 @@
 \RequirePackage{tikz}
 \RequirePackage[EULERGREEK]{sansmath}
 \RequirePackage{etoolbox}
-\RequirePackage{xstring}
+\RequirePackage{xstring} % for StrCut
 
 \usetikzlibrary{decorations}
 
@@ -36,6 +36,15 @@
 \csgdef{@open}{o}
 \csgdef{@skip}{-}
 \csgdef{@posbase}{I}
+\gdef\fingerloctop{t}
+
+\pgfkeys{
+  /akkoord/.is family, /akkoord,
+  default/.style = {p=I,f=i,c=white},
+  p/.estore in = \position,
+  f/.estore in = \fingerloc,
+  c/.estore in = \circlefill,
+}
 
 \xdef\fingerList{\empty}
 \newcommand{\addFingerList}[1]{\ifx\fingerList\empty{\xdef\fingerList{#1}}\else{\xdef\fingerList{\fingerList,#1}}\fi}
@@ -56,17 +65,18 @@ my pic adjust/.default=0pt,
 }
 %%
 
-\makeatletter
-\newrobustcmd{\akkoord}[3][I] {
+\newrobustcmd{\akkoord}[3][] {
+  \pgfkeys{/akkoord, default, #1}%
+%
   \begin{tikzpicture}[font=\sffamily\sansmath, scale=0.35, every node/.style={transform shape}, baseline=(current bounding box.north), my pic adjust=-2pt, yscale=-1] % Note: yscale -1 and node transform shape turns around the texts. this is solved by adding yscale -1 to node (see below)
 
   % Draw snares and frets (6 by 4)
   \draw[help lines] (0,0) grid (5,4);
 
-  \csdef{@position}{#1}
+  % \csdef{@position}{#1}
   % Write position on the left
   \ifcsequal{@position}{@skip} {} {
-    \draw (-1, 0.5) node {\Huge #1};
+    \draw (-1, 0.5) node {\Huge \position};
     % Draw guitar nut if visible (position == 1)
     \ifcsequal{@position}{@posbase} {
       \draw[thick] (0,-0.1) -- (5,-0.1);
@@ -148,13 +158,17 @@ my pic adjust/.default=0pt,
             }
             {
             % Otherwise fret is fret-number
-            \filldraw [fill=white] (\i-1, \csuse{@fret}-0.5) circle [radius=0.4];
+            \filldraw [fill=\circlefill] (\i-1, \csuse{@fret}-0.5) circle [radius=0.4];
             % write finger in fret
             \ifcsdef{@finger}
               {
               \ifcsequal{@finger}{@skip}{}
                 {
-                \node[yscale=-1] at (\i-1, \csuse{@fret}-0.5) {\Large \csuse{@finger}};
+                \ifx \fingerloc \fingerloctop
+                {\node[yscale=-1] at (\i-1, -0.5) {\Large \csuse{@finger}};}
+                \else
+                {\node[yscale=-1] at (\i-1, \csuse{@fret}-0.5) {\Large \csuse{@finger}};}
+                \fi
                 % Remember used finger for drawing bar
                 \addFingerList{\csuse{@finger}}
                 % Find out if we can draw a bar...
@@ -198,6 +212,5 @@ my pic adjust/.default=0pt,
   % Reset list of used fingers
   \xdef\fingerList{\empty}
 }
-\makeatother
 
 \endinput
