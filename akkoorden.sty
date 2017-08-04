@@ -23,19 +23,73 @@
 
 \NeedsTeXFormat{LaTeX2e}[1994/06/01]
 
-\ProvidesPackage{akkoord}[2017/07/23 Drawing guitar chords using TikZ]
+\ProvidesPackage{akkoorden}[2017/07/23 Drawing guitar chords using TikZ]
 
 \RequirePackage{tikz}
+\RequirePackage{pgfopts}
 \RequirePackage[EULERGREEK]{sansmath}
 \RequirePackage{etoolbox}
-\RequirePackage{xstring}
+\RequirePackage{xstring} % for StrCut
 
 \usetikzlibrary{decorations}
 
 \csgdef{@mute}{x}
 \csgdef{@open}{o}
 \csgdef{@skip}{-}
-\csgdef{@posbase}{I}
+\gdef\true{true}
+\gdef\false{false}
+\gdef\posbase{I}
+\gdef\fingerloctop{t}
+\gdef\inside{inside}
+\gdef\top{top}
+\gdef\left{left}
+\gdef\right{right}
+\gdef\defaultposition{\empty}
+\xdef\defaultshowposbase{\true}
+\gdef\defaultnosnares{6}
+\gdef\defaultnofrets{4}
+\xdef\defaultfingerloc{\inside}
+\gdef\defaultfingercolor{white}
+\xdef\defaultpositionloc{\left}
+
+\pgfkeys{
+  /akkoorden/.is family, /akkoorden,
+  defaultposition/.estore in = \defaultposition,
+  defaultshowposbase/.estore in = \defaultshowposbase,
+  defaultnosnares/.estore in = \defaultnosnares,
+  defaultnofrets/.estore in = \defaultnofrets,
+  defaultfingerloc/.estore in = \defaultfingerloc,
+  defaultfingercoler/.estore in = \defaultfingercolor,
+  defaultpositionloc/.estore in = \defaultpositionloc,
+}
+
+\ProcessPgfOptions{/akkoorden}
+
+\pgfkeys{
+  /akkoord/.is family, /akkoord,
+  default/.style =
+    {
+      position=\defaultposition,
+      positionloc=\defaultpositionloc,
+      fingerloc=\defaultfingerloc,
+      fingercolor=\defaultfingercolor,
+      nostrings=\defaultnosnares,
+      nofrets=\defaultnofrets,
+      showposbase=\defaultshowposbase,
+    },
+  position/.estore in = \position,
+  positionloc/.estore in = \positionloc,
+  fingerloc/.estore in = \fingerloc,
+  fingercolor/.estore in = \fingercolor,
+  nostrings/.estore in = \nostrings,
+  nofrets/.estore in = \nofrets,
+  showposbase/.estore in = \showposbase,
+  p/.style = {/akkoord/position=#1},
+  f/.style = {/akkoord/fingerloc=#1},
+  c/.style = {/akkoord/fingercolor=#1},
+  s/.style = {/akkoord/nostrings=#1},
+  n/.style = {/akkoord/nofrets=#1},
+}
 
 \xdef\fingerList{\empty}
 \newcommand{\addFingerList}[1]{\ifx\fingerList\empty{\xdef\fingerList{#1}}\else{\xdef\fingerList{\fingerList,#1}}\fi}
@@ -56,22 +110,34 @@ my pic adjust/.default=0pt,
 }
 %%
 
-\makeatletter
-\newrobustcmd{\akkoord}[3][I] {
+\newrobustcmd{\akkoord}[3][] {
+  \pgfkeys{/akkoord, default, #1}%
+%
   \begin{tikzpicture}[font=\sffamily\sansmath, scale=0.35, every node/.style={transform shape}, baseline=(current bounding box.north), my pic adjust=-2pt, yscale=-1] % Note: yscale -1 and node transform shape turns around the texts. this is solved by adding yscale -1 to node (see below)
 
   % Draw snares and frets (6 by 4)
-  \draw[help lines] (0,0) grid (5,4);
+  \draw[help lines] (0,0) grid (\nostrings-1,\nofrets);
 
-  \csdef{@position}{#1}
   % Write position on the left
-  \ifcsequal{@position}{@skip} {} {
-    \draw (-1, 0.5) node {\Huge #1};
+  \ifx \position \empty {} \else {
     % Draw guitar nut if visible (position == 1)
-    \ifcsequal{@position}{@posbase} {
-      \draw[thick] (0,-0.1) -- (5,-0.1);
-    } {}
-  }
+    \ifx \position \posbase {
+      \draw[thick] (0,-0.1) -- (\nostrings-1,-0.1);
+      \ifx \showposbase \true {
+        \ifx \positionloc \right {
+          \draw (\nostrings, 0.5) node {\Huge \position};
+        } \else {
+          \draw (-1, 0.5) node {\Huge \position};
+        } \fi
+      } \fi
+    } \else {
+      \ifx \positionloc \right {
+        \draw (\nostrings, 0.5) node {\Huge \position};
+      } \else {
+        \draw (-1, 0.5) node {\Huge \position};
+      } \fi
+    } \fi
+  } \fi
 
   \csdef{@chordname}{#3}
   % Write chord-name above chord
@@ -148,13 +214,17 @@ my pic adjust/.default=0pt,
             }
             {
             % Otherwise fret is fret-number
-            \filldraw [fill=white] (\i-1, \csuse{@fret}-0.5) circle [radius=0.4];
+            \filldraw [fill=\fingercolor] (\i-1, \csuse{@fret}-0.5) circle [radius=0.4];
             % write finger in fret
             \ifcsdef{@finger}
               {
               \ifcsequal{@finger}{@skip}{}
                 {
-                \node[yscale=-1] at (\i-1, \csuse{@fret}-0.5) {\Large \csuse{@finger}};
+                \ifx \fingerloc \top
+                {\node[yscale=-1] at (\i-1, -0.5) {\Large \csuse{@finger}};}
+                \else
+                {\node[yscale=-1] at (\i-1, \csuse{@fret}-0.5) {\Large \csuse{@finger}};}
+                \fi
                 % Remember used finger for drawing bar
                 \addFingerList{\csuse{@finger}}
                 % Find out if we can draw a bar...
@@ -175,7 +245,7 @@ my pic adjust/.default=0pt,
         % Write info
         \ifcsdef{@info}
           {
-          \node[yscale=-1] at (\i-1, 4.5) {\Large \csuse{@info}};
+          \node[yscale=-1] at (\i-1, \nofrets+.5) {\Large \csuse{@info}};
           } {}
       } {}
     % Cleanup
@@ -198,6 +268,5 @@ my pic adjust/.default=0pt,
   % Reset list of used fingers
   \xdef\fingerList{\empty}
 }
-\makeatother
 
 \endinput
