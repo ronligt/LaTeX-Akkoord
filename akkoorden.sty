@@ -105,7 +105,7 @@
 % This should probably not be inside this package file...
 \tikzset{my pic adjust/.style={%%
   baseline=(my center),
-  execute at end picture={\path (current bounding box.north) -- ++ (0,4pt);
+  execute at end picture={\path (current bounding box.northuth) -- ++ (0,4pt);
                           \path (current bounding box.south) -- ++ (0,-4pt);
                           \path (current bounding box.center) -- ++ (0,#1) coordinate (my center);
                           }%
@@ -143,11 +143,11 @@ my pic adjust/.default=0pt,
     } \fi
   } \fi
 
-  \csdef{@chordname}{#3}
-  % Write chord-name above chord
-  \ifcsequal{@chordname}{@skip} {} {
-    \node[yscale=-1] at (2.5,-1.5) {\Huge #3};
-  }
+  % % Write chord-name above chord
+  \def\chordname{#3}
+  \ifx \chordname \empty {} \else {
+    \node[yscale=-1] at (2.5,-1.5) {\Huge \chordname};
+  } \fi
 
   % Draw fingers on fret,
   % mute or open on top
