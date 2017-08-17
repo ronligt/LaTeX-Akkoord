@@ -8,10 +8,12 @@
 
 \usepackage{xfrac}
 
+\usepackage{caption}
+
 \begin{document}
 
-Dit is \akkoord[fingercolor=black, scale=0.10]{o,2,2,1,o,o}{} een test \newline
-Met daaronder nog een regel
+% Dit is \akkoord[fingercolor=black, scale=0.10]{o,2,2,1,o,o}{} een test \newline
+% Met daaronder nog een regel
 
 % \akkoord[-]{,x,x/i1,o,o/i2,-}{-}
 
@@ -38,7 +40,9 @@ Met daaronder nog een regel
   \akkoord{3/2/1,x,3/3/7,1/1/{$\flat$9},3/4/5,x}{G\textsubscript{7$\flat$9}} &
   \akkoord[p=II]{x,2/1/1,4/3/5,2/1/7,4/4/3,2/1/{(5)}}{C\textsubscript{7}}
   \akkoord{x,3/3/1,2/2/3,3/4/7,1/1/1,x}{C\textsubscript{7}}
-  \akkoord{x,3/2/1,2/1/3,3/3/7,3/4/9,3/4/{(5)}}{C\textsubscript{79}} \\ \hline
+  \akkoord{x,3/2/1,2/1/3,3/3/7,3/4/9,3/4/{(5)}}{C\textsubscript{79}}\newline
+  \akkoord{x,3/3/1,2/1/3,3/4/7,2/2/{$\flat$9},x}{C\textsubscript{7$\flat$9}}
+  \akkoord{x,2/1/1,3/2/{$\flat$5},2/1/7,4/4/3,x}{C\textsubscript{7$\flat$5}} \\ \hline
   \textbf{m7\newline-7} &
   \akkoord[p=II]{2/2/1,x,2/3/7,2/3/{$\flat$3},2/3/5,x}{G-\textsubscript{7}} &
   \akkoord[p=II]{x,2/1/1,4/3/5,2/1/7,3/2/{$\flat$3},2/1/{(5)}}{C-\textsubscript{7}}
@@ -72,15 +76,20 @@ Met daaronder nog een regel
   \end{tabu} \\ \hline
 \end{tabu}
 
-\begin{center}
-circle of fifths ("kwintencirkel")
-
+% \begin{minipage}{\textwidth}
+% \begin{center}
+\begin{figure}
+\centering
+\caption*{circle of fifths ("kwintencirkel")}
+% \vspace{5mm}
 \begin{tikzpicture}
-  \draw (0,0) circle [radius=2.2];
+  \draw (0,0) circle [radius=4.2];
   \foreach \x [count=\i,evaluate=\i as \angle using 90-(\i-1)*30] in {C,G,D,A,E,B,{G$\flat$/F$\sharp$},{D$\flat$},{A$\flat$},{E$\flat$},{B$\flat$},F} {
   % \filldraw[fill=white] (\angle:2.7) circle [radius=.45];
-  \draw (\angle:2.4) node {\x};
+  \draw (\angle:4.5) node {\x};
   }
 \end{tikzpicture}
-\end{center}
+\end{figure}
+% \end{center}
+% \end{minipage}
 \end{document}
