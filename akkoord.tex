@@ -76,20 +76,27 @@
   \end{tabu} \\ \hline
 \end{tabu}
 
-% \begin{minipage}{\textwidth}
-% \begin{center}
 \begin{figure}
 \centering
 \caption*{circle of fifths ("kwintencirkel")}
 % \vspace{5mm}
 \begin{tikzpicture}
   \draw (0,0) circle [radius=4.2];
+  \draw (90:5.0) node {\textbf{major}};
+  \draw [->] (80:4.8) arc (80:70:4.8);
+  \draw (75:5.0) node {$\sharp$};
   \foreach \x [count=\i,evaluate=\i as \angle using 90-(\i-1)*30] in {C,G,D,A,E,B,{G$\flat$/F$\sharp$},{D$\flat$},{A$\flat$},{E$\flat$},{B$\flat$},F} {
   % \filldraw[fill=white] (\angle:2.7) circle [radius=.45];
   \draw (\angle:4.5) node {\x};
   }
+  \draw (90:3.4) node {\textbf{minor}};
+  \draw [->] (100:4.8) arc (100:110:4.8);
+  \draw (105:5.0) node {$\flat$};
+  \foreach \x [count=\i,evaluate=\i as \angle using 90-(\i-1)*30] in {A,E,B,{F$\sharp$},{C$\sharp$},{G$\sharp$},{E$\flat$/D$\sharp$},{B$\flat$},F,C,G,D} {
+  % \filldraw[fill=white] (\angle:2.7) circle [radius=.45];
+  \draw (\angle:3.9) node {\x};
+  }
 \end{tikzpicture}
 \end{figure}
-% \end{center}
-% \end{minipage}
+
 \end{document}
