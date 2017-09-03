@@ -129,16 +129,16 @@ my pic adjust/.default=0pt,
       \draw[thick] (0,-0.1) -- (\nostrings-1,-0.1);
       \ifx \showposbase \true {
         \ifx \positionloc \right {
-          \draw (\nostrings, 0.5) node {\Huge \position};
+          \node[yscale=-1] at (\nostrings, 0.5) {\huge \position};
         } \else {
-          \draw (-1, 0.5) node {\Huge \position};
+          \node[yscale=-1] at (-1, 0.5) {\huge \position};
         } \fi
       } \fi
     } \else {
       \ifx \positionloc \right {
-        \draw (\nostrings, 0.5) node {\Huge \position};
+        \node[yscale=-1] at (\nostrings, 0.5) {\huge \position};
       } \else {
-        \draw (-1, 0.5) node {\Huge \position};
+        \node[yscale=-1] at (-1, 0.5) {\huge \position};
       } \fi
     } \fi
   } \fi
