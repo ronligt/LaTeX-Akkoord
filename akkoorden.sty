@@ -103,14 +103,16 @@
 % Fix baseline when drawing tikz inside tabu
 % source: https://tex.stackexchange.com/questions/246698/table-with-tikz-image-vertical-alignment
 % This should probably not be inside this package file...
-\tikzset{my pic adjust/.style={%%
-  baseline=(my center),
-  execute at end picture={\path (current bounding box.north) -- ++ (0,4pt);
-                          \path (current bounding box.south) -- ++ (0,-4pt);
-                          \path (current bounding box.center) -- ++ (0,#1) coordinate (my center);
-                          }%
+\tikzset{%%
+  my pic adjust/.style={%%
+    baseline=(my center),
+    execute at end picture={%%
+      \path (current bounding box.north) -- ++ (0,4pt);
+      \path (current bounding box.south) -- ++ (0,-4pt);
+      \path (current bounding box.center) -- ++ (0,#1) coordinate (my center);
+    }%
   },
-my pic adjust/.default=0pt,
+  my pic adjust/.default=0pt,
 }
 %%
 
