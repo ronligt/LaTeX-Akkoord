@@ -1,0 +1,27 @@
+\documentclass{article}
+
+% General document formatting
+\usepackage[margin=0.6in]{geometry}
+\usepackage[parfill]{parskip}
+\usepackage[utf8]{inputenc}
+
+% Related to math
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+
+\pagenumbering{gobble}
+
+\usepackage[defaultscale=0.50]{akkoorden}
+
+\usepackage{forloop}
+
+\begin{document}
+\newcounter{row}
+\newcounter{column}
+\forloop{row}{0}{\value{row} < 7}{
+  \forloop{column}{0}{\value{column} < 6}{
+    \akkoord{}{}
+  }
+  \vspace{15mm}
+  \\
+}
+\end{document}

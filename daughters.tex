@@ -1,0 +1,46 @@
+\documentclass{article}
+
+% General document formatting
+\usepackage[margin=0.6in]{geometry}
+\usepackage[parfill]{parskip}
+\usepackage[utf8]{inputenc}
+
+% Related to math
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+
+\pagenumbering{gobble}
+
+\usepackage[defaultposition=I,defaultshowposbase=true,defaultscale=0.50]{akkoorden}
+
+% \usepackage{forloop}
+
+\begin{document}
+\section*{Verse}
+\akkoord[p=IV]{4,x,4,4/4,o,o}{B-\textsuperscript{11}}
+\akkoord[p=IV]{o,x,2,4/4,o,o}{E-\textsuperscript{7}}
+\akkoord[p=IV]{x/{thumb},o,2,4/4,o,o}{E\textsuperscript{7sus}}
+\akkoord[p=IV]{x,2,1,4/4,o,o}{D}
+\vspace{10mm}\\
+\section*{Chorus}
+\akkoord[p=IV]{4,x,4,4/4,o,o}{B-\textsuperscript{11}}
+\akkoord[p=IV]{o,x,3,4/4,o,o}{E\textsuperscript{7}}
+\akkoord[p=IV]{x,o,2,4/4,o,o}{E\textsuperscript{7sus}}
+\akkoord[p=IV]{x,2,1,4/4,o,o}{D}
+\vspace{10mm}\\
+\section*{Bridge}
+\akkoord[p=VII]{4/T,x,4,3,4,x}{D\textsuperscript{9}}
+\akkoord[p=VII]{3/T,x,3,2,3,x}{C\textsuperscript{9}}
+\akkoord[p=V,n=5]{5/T,x,1,1,1,x}{D}
+\akkoord[p=V]{1/T,x,1,2,1,x}{A\textsuperscript{7}}
+\akkoord[p=V]{2/T,x,4,2,3,x}{F$\sharp$\textsubscript{/A$\sharp$}}
+\vspace{10mm}\\
+\akkoord[p=IV]{4,x,4,4,o,o}{B-\textsuperscript{11}}
+\akkoord{o,2,x,o,2,o}{E-\textsuperscript{7}}
+\akkoord{2/T,x,o,2,3,2}{D}
+\akkoord[p=II]{2/T,x,2,2,2,4}{G-\textsuperscript{9}}
+\vspace{10mm}\\
+\akkoord{x,o,2,o,2,o}{A\textsuperscript{7}}
+\akkoord[p=III]{x,o,2,o,1,o}{B-\textsuperscript{7}}
+\akkoord[p=IV]{x,o,2,o,2,o}{C\textsuperscript{7}}
+\akkoord[p=VI]{x,o,2,o,2,o}{D\textsuperscript{7}}
+\end{document}
